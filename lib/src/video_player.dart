@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:html' as html;
 import 'dart:html';
+import 'dart:js';
 import 'dart:js_util';
 import 'dart:math';
 
