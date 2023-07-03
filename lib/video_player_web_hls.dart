@@ -70,11 +70,9 @@ class VideoPlayerPluginHls extends VideoPlayerPlatform {
         uri = assetUrl;
         break;
       case DataSourceType.file:
-        return Future<int>.error(UnimplementedError(
-            'web implementation of video_player cannot play local files'));
+        return Future<int>.error(UnimplementedError('web implementation of video_player cannot play local files'));
       case DataSourceType.contentUri:
-        return Future<int>.error(UnimplementedError(
-            'web implementation of video_player cannot play content uri'));
+        return Future<int>.error(UnimplementedError('web implementation of video_player cannot play content uri'));
     }
 
     final VideoElement videoElement = VideoElement()
@@ -86,13 +84,9 @@ class VideoPlayerPluginHls extends VideoPlayerPlatform {
     videoElement.attributes['playsinline'] = 'true';
 
     // TODO(hterkelsen): Use initialization parameters once they are available
-    ui.platformViewRegistry.registerViewFactory(
-        'videoPlayer-$textureId', (int viewId) => videoElement);
+    ui.platformViewRegistry.registerViewFactory('videoPlayer-$textureId', (int viewId) => videoElement);
 
-    final VideoPlayer player = VideoPlayer(
-        videoElement: videoElement,
-        uri: uri,
-        headers: headers ?? Map<String, String>());
+    final VideoPlayer player = VideoPlayer(videoElement: videoElement, uri: uri, headers: headers ?? Map<String, String>());
 
     await player.initialize();
 
@@ -155,4 +149,18 @@ class VideoPlayerPluginHls extends VideoPlayerPlatform {
   /// Sets the audio mode to mix with other sources (ignored)
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) => Future<void>.value();
+
+  @override
+  List<int> getVideoTracks(int textureId) {
+    return _player(textureId).getVideoTracks();
+  }
+
+  @override
+  Future<void> setVideoTrack(int textureId, int trackIndex) async {
+    return _player(textureId).setVideoTrack(trackIndex);
+  }
+
+  Future<void> setMaxBufferLength(int textureId, Duration maxLength) {
+    return _player(textureId).setMaxBufferLength(maxLength);
+  }
 }

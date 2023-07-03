@@ -20,7 +20,14 @@ dependencies:
     sdk: flutter
   http: ^1.0.0
   js: ^0.6.3
-  video_player_platform_interface: ">=6.1.0 <7.0.0"
+
+dependency_overrides:
+  video_player_platform_interface:
+    git:
+      url: https://github.com/berberin/packages
+      path: packages/video_player/video_player_platform_interface
+      ref: feat/select_video_track
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

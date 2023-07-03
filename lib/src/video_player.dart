@@ -5,13 +5,13 @@
 import 'dart:async';
 import 'dart:html' as html;
 import 'dart:html';
+import 'dart:js_util';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:js/js.dart';
-import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:http/http.dart' as http;
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web_hls/hls.dart';
 import 'package:video_player_web_hls/no_script_tag_exception.dart';
 
@@ -38,8 +38,7 @@ const Map<int, String> _kErrorValueToErrorDescription = <int, String>{
 
 // The default error message, when the error is an empty string
 // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
-const String _kDefaultErrorMessage =
-    'No further diagnostic information can be determined or provided.';
+const String _kDefaultErrorMessage = 'No further diagnostic information can be determined or provided.';
 
 /// Wraps a [html.VideoElement] so its API complies with what is expected by the plugin.
 class VideoPlayer {
@@ -261,8 +260,7 @@ class VideoPlayer {
 
   // Sends an [VideoEventType.initialized] [VideoEvent] with info about the wrapped video.
   void _sendInitialized() {
-    final Duration? duration =
-        convertNumVideoDurationToPluginDuration(_videoElement.duration);
+    final Duration? duration = convertNumVideoDurationToPluginDuration(_videoElement.duration);
 
     final Size? size = _videoElement.videoHeight.isFinite
         ? Size(
@@ -289,9 +287,7 @@ class VideoPlayer {
     if (_isBuffering != buffering) {
       _isBuffering = buffering;
       _eventController.add(VideoEvent(
-        eventType: _isBuffering
-            ? VideoEventType.bufferingStart
-            : VideoEventType.bufferingEnd,
+        eventType: _isBuffering ? VideoEventType.bufferingStart : VideoEventType.bufferingEnd,
       ));
     }
   }
@@ -320,34 +316,26 @@ class VideoPlayer {
     bool canPlayHls = false;
     try {
       final String canPlayType = _videoElement.canPlayType('application/vnd.apple.mpegurl');
-      canPlayHls =
-          canPlayType != '';
+      canPlayHls = canPlayType != '';
     } catch (e) {}
     return canPlayHls;
   }
 
   Future<bool> shouldUseHlsLibrary() async {
-    return isSupported() &&
-        (uri.toString().contains('m3u8') || await _testIfM3u8()) &&
-        !canPlayHlsNatively();
+    return isSupported() && (uri.toString().contains('m3u8') || await _testIfM3u8()) && !canPlayHlsNatively();
   }
 
   Future<bool> _testIfM3u8() async {
     try {
       final Map<String, String> headers = Map<String, String>.of(this.headers);
       if (headers.containsKey('Range') || headers.containsKey('range')) {
-        final List<int> range = (headers['Range'] ?? headers['range'])!
-            .split('bytes')[1]
-            .split('-')
-            .map((String e) => int.parse(e))
-            .toList();
+        final List<int> range = (headers['Range'] ?? headers['range'])!.split('bytes')[1].split('-').map((String e) => int.parse(e)).toList();
         range[1] = min(range[0] + 1023, range[1]);
         headers['Range'] = 'bytes=${range[0]}-${range[1]}';
       } else {
         headers['Range'] = 'bytes=0-1023';
       }
-      final http.Response response =
-          await http.get(Uri.parse(this.uri), headers: headers);
+      final http.Response response = await http.get(Uri.parse(this.uri), headers: headers);
       final String body = response.body;
       if (!body.contains('#EXTM3U')) {
         return false;
@@ -356,5 +344,27 @@ class VideoPlayer {
     } catch (e) {
       return false;
     }
+  }
+
+  dynamic getVideoTracks() {
+    List<dynamic> tracks = _hls?.levels ?? [];
+    List<int> res = <int>[];
+    if (tracks.isNotEmpty) {
+      for (var l in tracks) {
+        res.add(getProperty(l, 'height'));
+      }
+    }
+    return res;
+  }
+
+  Future<void> setVideoTrack(int trackIndex) async {
+    _hls?.currentLevel = trackIndex;
+    _hls?.loadLevels = trackIndex;
+    _hls?.autoLevelCapping = trackIndex;
+  }
+
+  Future<void> setMaxBufferLength(Duration duration) async {
+    setProperty(_hls?.config as Object, 'maxBufferLength', duration.inSeconds);
+    setProperty(_hls?.config as Object, 'maxMaxBufferLength', duration.inSeconds);
   }
 }
