@@ -352,14 +352,13 @@ class VideoPlayer {
     List<int> res = <int>[];
     if (tracks.isNotEmpty) {
       for (var l in tracks) {
-        res.add(getProperty(l, 'height'));
+        res.add(min(getProperty(l, 'height'), getProperty(l, 'width')));
       }
     }
     return res;
   }
 
   Future<void> setVideoTrack(int trackIndex) async {
-    _hls?.currentLevel = trackIndex;
     _hls?.loadLevels = trackIndex;
     _hls?.autoLevelCapping = trackIndex;
   }

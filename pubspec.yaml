@@ -24,7 +24,7 @@ dependencies:
 dependency_overrides:
   video_player_platform_interface:
     git:
-      url: https://github.com/berberin/packages
+      url: https://github.com/moon-book/packages
       path: packages/video_player/video_player_platform_interface
       ref: feat/select_video_track
 
