@@ -10,7 +10,7 @@ external bool isSupported();
 
 @JS()
 class Hls {
-  external factory Hls(HlsConfig config);
+  external factory Hls();
 
   @JS()
   external void stopLoad();

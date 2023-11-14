@@ -4,8 +4,6 @@
 
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:html';
-import 'dart:js';
 import 'dart:js_util';
 import 'dart:math';
 
@@ -82,26 +80,7 @@ class VideoPlayer {
 
     if (await shouldUseHlsLibrary()) {
       try {
-        _hls = Hls(
-          HlsConfig(
-            xhrSetup: allowInterop(
-              (HttpRequest xhr, String _) {
-                if (headers.isEmpty) {
-                  return;
-                }
-
-                if (headers.containsKey('useCookies')) {
-                  xhr.withCredentials = true;
-                }
-                headers.forEach((String key, String value) {
-                  if (key != 'useCookies') {
-                    xhr.setRequestHeader(key, value);
-                  }
-                });
-              },
-            ),
-          ),
-        );
+        _hls = Hls();
         _hls!.attachMedia(_videoElement);
         _hls!.on('hlsMediaAttached', allowInterop((dynamic _, dynamic __) {
           _hls!.loadSource(uri.toString());
