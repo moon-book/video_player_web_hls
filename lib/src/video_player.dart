@@ -104,6 +104,7 @@ class VideoPlayer {
         });
         setProperty(_hls?.config as Object, 'liveSyncDurationCount', 1);
         setProperty(_hls?.config as Object, 'liveMaxLatencyDurationCount', 1);
+        setProperty(_hls?.config as Object, 'lowLatencyMode', true);
       } catch (e) {
         throw NoScriptTagException();
       }
