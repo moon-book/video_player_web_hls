@@ -102,10 +102,10 @@ class VideoPlayer {
           }
           setBuffering(false);
         });
-        setProperty(_hls?.config as Object, 'liveMaxLatencyDuration', 3);
+        setProperty(_hls?.config as Object, 'liveMaxLatencyDuration', 15);
         setProperty(_hls?.config as Object, 'lowLatencyMode', true);
         setProperty(_hls?.config as Object, 'maxLiveSyncPlaybackRate', 1.5);
-        setProperty(_hls?.config as Object, 'liveSyncDuration', 1.5);
+        setProperty(_hls?.config as Object, 'liveSyncDuration', 5);
       } catch (e) {
         throw NoScriptTagException();
       }
