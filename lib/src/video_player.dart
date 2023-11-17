@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'dart:html' as html;
 import 'dart:html';
-import 'dart:js';
 import 'dart:js_util';
 import 'dart:math';
 
@@ -102,6 +101,12 @@ class VideoPlayer {
             ),
           ),
         );
+        setProperty(_hls?.config as Object, 'fragLoadingMaxRetry', 10000);
+        setProperty(_hls?.config as Object, 'manifestLoadingMaxRetry', 10000);
+        setProperty(_hls?.config as Object, 'levelLoadingMaxRetry', 10000);
+        setProperty(_hls?.config as Object, 'fragLoadingMaxRetry', 10000);
+        setProperty(_hls?.config as Object, 'fragLoadingMaxRetryTimeout', 20000);
+
         _hls!.attachMedia(_videoElement);
         _hls!.on('hlsMediaAttached', allowInterop((dynamic _, dynamic __) {
           _hls!.loadSource(uri.toString());
@@ -116,6 +121,7 @@ class VideoPlayer {
             ));
           }
         }));
+
         _videoElement.onCanPlay.listen((dynamic _) {
           if (!_isInitialized) {
             _isInitialized = true;
